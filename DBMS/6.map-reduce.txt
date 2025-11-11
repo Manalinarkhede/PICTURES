@@ -1,0 +1,83 @@
+PS-6
+mongosh // sudo mongosh
+use database_name
+show dbs
+db.createCollection("collection_name")
+
+oem@oem-OptiPlex-3090:~$ mongosh
+Current Mongosh Log ID:	69086ed46cf0cb3e36ce5f46
+Connecting to:		mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.5.8
+Using MongoDB:		6.0.26
+Using Mongosh:		2.5.8
+mongosh 2.5.9 is available for download: https://www.mongodb.com/try/download/shell
+
+For mongosh info see: https://www.mongodb.com/docs/mongodb-shell/
+
+------
+   The server generated these startup warnings when booting
+   2025-11-03T13:47:05.062+05:30: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem
+   2025-11-03T13:47:08.727+05:30: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+   2025-11-03T13:47:08.727+05:30: vm.max_map_count is too low
+------
+
+test> use Mahendra
+switched to db Mahendra
+Mahendra> db.customer.insertMany([
+...   { cid: 1, cname: "Ravi Kumar", amount: 2000, product_name: "Mobile" },
+...   { cid: 1, cname: "Ravi Kumar", amount: 1500, product_name: "Headphones" }, 
+...   { cid: 2, cname: "Sneha Patil", amount: 3000, product_name: "Laptop" },
+...   { cid: 2, cname: "Sneha Patil", amount: 1000, product_name: "Mouse" },
+...   { cid: 3, cname: "Amit Desai", amount: 2500, product_name: "Tablet" },
+...   { cid: 3, cname: "Amit Desai", amount: 500, product_name: "Charger" },
+...   { cid: 1, cname: "Ravi Kumar", amount: 1000, product_name: "Power Bank" }
+... ]);
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('69086ee66cf0cb3e36ce5f47'),
+    '1': ObjectId('69086ee66cf0cb3e36ce5f48'),
+    '2': ObjectId('69086ee66cf0cb3e36ce5f49'),
+    '3': ObjectId('69086ee66cf0cb3e36ce5f4a'),
+    '4': ObjectId('69086ee66cf0cb3e36ce5f4b'),
+    '5': ObjectId('69086ee66cf0cb3e36ce5f4c'),
+    '6': ObjectId('69086ee66cf0cb3e36ce5f4d')
+  }
+}
+Mahendra> var mapFunction = function() {
+...   emit(this.cname, this.amount);
+... };
+... 
+
+Mahendra> var reduceFunction = function(customerName, amounts) {
+...   return Array.sum(amounts);
+... };
+... 
+
+Mahendra> db.customer.mapReduce(
+...   mapFunction,
+...   reduceFunction,
+...   {
+...     out: "customer_summary"
+...   }
+... );
+... 
+DeprecationWarning: Collection.mapReduce() is deprecated. Use an aggregation instead.
+See https://mongodb.com/docs/manual/core/map-reduce for details.
+{ result: 'customer_summary', ok: 1 }
+Mahendra> db.customer_summary.find().pretty();
+... 
+[
+  { _id: 'Ravi Kumar', value: 4500 },
+  { _id: 'Amit Desai', value: 3000 },
+  { _id: 'Sneha Patil', value: 4000 }
+]
+Mahendra> 
+
+
+Map function: Goes through each document in the customer collection and “emits” a key-value pair. Here, the key is the customer name (cname) and the value is the amount they spent (amount).
+
+Reduce function: Takes all values (amounts) for the same key (customer) and combines them. In this code, it sums up all the amounts for each customer.
+
+MapReduce process: First, the map function runs on every document, then MongoDB groups the emitted key-value pairs by key (customer), and finally, the reduce function aggregates the values for each key.
+
+Result: A new collection (customer_summary) is created that shows the total amount spent by each customer.

@@ -1,0 +1,312 @@
+PS-4
+mongosh // sudo mongosh
+use database_name
+show dbs
+db.createCollection("collection_name")
+
+oem@oem-OptiPlex-3090:~$ mongosh
+
+Current Mongosh Log ID:	69086b7f3fe23b600ece5f46
+Connecting to:		mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.5.8
+Using MongoDB:		6.0.26
+Using Mongosh:		2.5.8
+
+For mongosh info see: https://www.mongodb.com/docs/mongodb-shell/
+
+------
+   The server generated these startup warnings when booting
+   2025-11-03T13:47:05.062+05:30: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem
+   2025-11-03T13:47:08.727+05:30: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+   2025-11-03T13:47:08.727+05:30: vm.max_map_count is too low
+------
+
+test> 
+
+test> use Mahendra
+switched to db Mahendra
+Mahendra> db
+Mahendra
+Mahendra> db.Teachers.insertMany([
+...   { Tname: "Praveen", dno: 101, dname: "Computer", experience: 5, salary: 12000, date_of_joining: "2018-06-10" },
+...   { Tname: "Sneha", dno: 102, dname: "IT", experience: 4, salary: 9500, date_of_joining: "2019-03-15" },
+...   { Tname: "Rahul", dno: 103, dname: "E&TC", experience: 8, salary: 15000, date_of_joining: "2016-11-20" },
+...   { Tname: "Amit", dno: 104, dname: "Computer", experience: 6, salary: 13000, date_of_joining: "2017-08-01" },
+...   { Tname: "Priya", dno: 105, dname: "Mechanical", experience: 3, salary: 8000, date_of_joining: "2020-01-10" }
+... ]);
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('69086be33fe23b600ece5f47'),
+    '1': ObjectId('69086be33fe23b600ece5f48'),
+    '2': ObjectId('69086be33fe23b600ece5f49'),
+    '3': ObjectId('69086be33fe23b600ece5f4a'),
+    '4': ObjectId('69086be33fe23b600ece5f4b')
+  }
+}
+Mahendra> db.Students.insertMany([
+...   { Sname: "Ravi", roll_no: 1, class: "SE" },
+...   { Sname: "XYZ", roll_no: 2, class: "TE" },
+...   { Sname: "Anjali", roll_no: 3, class: "BE" },
+...   { Sname: "Karan", roll_no: 4, class: "SE" }
+... ]);
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('69086c273fe23b600ece5f4c'),
+    '1': ObjectId('69086c273fe23b600ece5f4d'),
+    '2': ObjectId('69086c273fe23b600ece5f4e'),
+    '3': ObjectId('69086c273fe23b600ece5f4f')
+  }
+}
+Mahendra> db.Teachers.find().sort({ Tname: 1 });
+... 
+[
+  {
+    _id: ObjectId('69086be33fe23b600ece5f4a'),
+    Tname: 'Amit',
+    dno: 104,
+    dname: 'Computer',
+    experience: 6,
+    salary: 13000,
+    date_of_joining: '2017-08-01'
+  },
+  {
+    _id: ObjectId('69086be33fe23b600ece5f47'),
+    Tname: 'Praveen',
+    dno: 101,
+    dname: 'Computer',
+    experience: 5,
+    salary: 12000,
+    date_of_joining: '2018-06-10'
+  },
+  {
+    _id: ObjectId('69086be33fe23b600ece5f4b'),
+    Tname: 'Priya',
+    dno: 105,
+    dname: 'Mechanical',
+    experience: 3,
+    salary: 8000,
+    date_of_joining: '2020-01-10'
+  },
+  {
+    _id: ObjectId('69086be33fe23b600ece5f49'),
+    Tname: 'Rahul',
+    dno: 103,
+    dname: 'E&TC',
+    experience: 8,
+    salary: 15000,
+    date_of_joining: '2016-11-20'
+  },
+  {
+    _id: ObjectId('69086be33fe23b600ece5f48'),
+    Tname: 'Sneha',
+    dno: 102,
+    dname: 'IT',
+    experience: 4,
+    salary: 9500,
+    date_of_joining: '2019-03-15'
+  }
+]
+Mahendra> db.Teachers.find({ dname: "Computer" });
+... 
+[
+  {
+    _id: ObjectId('69086be33fe23b600ece5f47'),
+    Tname: 'Praveen',
+    dno: 101,
+    dname: 'Computer',
+    experience: 5,
+    salary: 12000,
+    date_of_joining: '2018-06-10'
+  },
+  {
+    _id: ObjectId('69086be33fe23b600ece5f4a'),
+    Tname: 'Amit',
+    dno: 104,
+    dname: 'Computer',
+    experience: 6,
+    salary: 13000,
+    date_of_joining: '2017-08-01'
+  }
+]
+Mahendra> db.Teachers.find({ dname: { $in: ["Computer", "IT", "E&TC"] } });
+... 
+[
+  {
+    _id: ObjectId('69086be33fe23b600ece5f47'),
+    Tname: 'Praveen',
+    dno: 101,
+    dname: 'Computer',
+    experience: 5,
+    salary: 12000,
+    date_of_joining: '2018-06-10'
+  },
+  {
+    _id: ObjectId('69086be33fe23b600ece5f48'),
+    Tname: 'Sneha',
+    dno: 102,
+    dname: 'IT',
+    experience: 4,
+    salary: 9500,
+    date_of_joining: '2019-03-15'
+  },
+  {
+    _id: ObjectId('69086be33fe23b600ece5f49'),
+    Tname: 'Rahul',
+    dno: 103,
+    dname: 'E&TC',
+    experience: 8,
+    salary: 15000,
+    date_of_joining: '2016-11-20'
+  },
+  {
+    _id: ObjectId('69086be33fe23b600ece5f4a'),
+    Tname: 'Amit',
+    dno: 104,
+    dname: 'Computer',
+    experience: 6,
+    salary: 13000,
+    date_of_joining: '2017-08-01'
+  }
+]
+Mahendra> db.Teachers.find({
+...   dname: { $in: ["Computer", "IT", "E&TC"] },
+...   salary: { $gte: 10000 }
+... });
+... 
+[
+  {
+    _id: ObjectId('69086be33fe23b600ece5f47'),
+    Tname: 'Praveen',
+    dno: 101,
+    dname: 'Computer',
+    experience: 5,
+    salary: 12000,
+    date_of_joining: '2018-06-10'
+  },
+  {
+    _id: ObjectId('69086be33fe23b600ece5f49'),
+    Tname: 'Rahul',
+    dno: 103,
+    dname: 'E&TC',
+    experience: 8,
+    salary: 15000,
+    date_of_joining: '2016-11-20'
+  },
+  {
+    _id: ObjectId('69086be33fe23b600ece5f4a'),
+    Tname: 'Amit',
+    dno: 104,
+    dname: 'Computer',
+    experience: 6,
+    salary: 13000,
+    date_of_joining: '2017-08-01'
+  }
+]
+Mahendra> db.Students.find({ $or: [ { roll_no: 2 }, { Sname: "XYZ" } ] });
+... 
+[
+  {
+    _id: ObjectId('69086c273fe23b600ece5f4d'),
+    Sname: 'XYZ',
+    roll_no: 2,
+    class: 'TE'
+  }
+]
+Mahendra> db.Teachers.updateOne(
+...   { Tname: "Praveen" },
+...   { $set: { experience: 10 } },
+...   { upsert: true }
+... );
+... 
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+Mahendra> db.Teachers.updateMany(
+...   { dname: "IT" },
+...   { $set: { dname: "COMP" } }
+... );
+... 
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+Mahendra> db.Teachers.find({}, { _id: 0, Tname: 1, experience: 1 });
+... 
+[
+  { Tname: 'Praveen', experience: 10 },
+  { Tname: 'Sneha', experience: 4 },
+  { Tname: 'Rahul', experience: 8 },
+  { Tname: 'Amit', experience: 6 },
+  { Tname: 'Priya', experience: 3 }
+]
+Mahendra> db.Teachers.deleteMany({ dname: "IT" });
+... 
+{ acknowledged: true, deletedCount: 0 }
+Mahendra> db.Teachers.find().sort({ Tname: 1 }).limit(3).pretty();
+... 
+[
+  {
+    _id: ObjectId('69086be33fe23b600ece5f4a'),
+    Tname: 'Amit',
+    dno: 104,
+    dname: 'Computer',
+    experience: 6,
+    salary: 13000,
+    date_of_joining: '2017-08-01'
+  },
+  {
+    _id: ObjectId('69086be33fe23b600ece5f47'),
+    Tname: 'Praveen',
+    dno: 101,
+    dname: 'Computer',
+    experience: 10,
+    salary: 12000,
+    date_of_joining: '2018-06-10'
+  },
+  {
+    _id: ObjectId('69086be33fe23b600ece5f4b'),
+    Tname: 'Priya',
+    dno: 105,
+    dname: 'Mechanical',
+    experience: 3,
+    salary: 8000,
+    date_of_joining: '2020-01-10'
+  }
+]
+Mahendra> db.Teachers.find().pretty();
+... db.Students.find().pretty();
+... 
+[
+  {
+    _id: ObjectId('69086c273fe23b600ece5f4c'),
+    Sname: 'Ravi',
+    roll_no: 1,
+    class: 'SE'
+  },
+  {
+    _id: ObjectId('69086c273fe23b600ece5f4d'),
+    Sname: 'XYZ',
+    roll_no: 2,
+    class: 'TE'
+  },
+  {
+    _id: ObjectId('69086c273fe23b600ece5f4e'),
+    Sname: 'Anjali',
+    roll_no: 3,
+    class: 'BE'
+  },
+  {
+    _id: ObjectId('69086c273fe23b600ece5f4f'),
+    Sname: 'Karan',
+    roll_no: 4,
+    class: 'SE'
+  }
+]

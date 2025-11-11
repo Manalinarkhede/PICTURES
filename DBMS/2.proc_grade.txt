@@ -1,0 +1,78 @@
+Ps-2
+sudo mysql -u root -p
+CREATE DATABASE database_name;
+USE database_name;
+SHOW DATABASES;
+
+mysql> use stud_db;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+use databse;
+Database changed
+
+mysql> CREATE TABLE Stud_Marks (     
+name VARCHAR(100),     total_marks INT
+ );
+Query OK, 0 rows affected (0.77 sec)
+
+mysql> CREATE TABLE Result (
+    -> Roll int PRIMARY KEY,
+    -> Name VARCHAR(100),
+    -> Class VARCHAR(50)
+    -> );
+Query OK, 0 rows affected (0.63 sec)
+
+
+mysql> CREATE PROCEDURE proc_Grade(
+    ->     IN p_roll INT,
+    ->     IN p_name VARCHAR(100),
+    ->     IN p_marks INT
+    -> )
+    -> BEGIN
+    ->     DECLARE v_class VARCHAR(50);
+    -> 
+    ->     IF p_marks >= 990 AND p_marks <= 1500 THEN
+    ->         SET v_class = 'Distinction';
+    ->     ELSEIF p_marks BETWEEN 900 AND 989 THEN
+    ->         SET v_class = 'First Class';
+    ->     ELSEIF p_marks BETWEEN 825 AND 899 THEN
+    ->         SET v_class = 'Higher Second Class';
+    ->     ELSE
+    ->         SET v_class = 'Other';
+    ->     END IF;
+    -> 
+    ->     INSERT INTO Result (Roll, Name, Class)
+    ->     VALUES (p_roll, p_name, v_class);
+    -> END //
+Query OK, 0 rows affected (0.20 sec)
+
+mysql> 
+mysql> DELIMITER ;
+mysql> CALL proc_Grade(1, 'John Doe', 1200);
+Query OK, 1 row affected (0.09 sec)
+
+mysql> CALL proc_Grade(2, 'Jane Smith', 950);
+Query OK, 1 row affected (0.11 sec)
+
+mysql> CALL proc_Grade(3, 'Ravi Kumar', 860);
+Query OK, 1 row affected (0.14 sec)
+
+mysql> CALL proc_Grade(4, 'Priya Patil', 700);
+Query OK, 1 row affected (0.11 sec)
+
+mysql> SELECT * FROM Result;
++------+-------------+---------------------+
+| Roll | Name        | Class               |
++------+-------------+---------------------+
+|    1 | John Doe    | Distinction         |
+|    2 | Jane Smith  | First Class         |
+|    3 | Ravi Kumar  | Higher Second Class |
+|    4 | Priya Patil | Other               |
++------+-------------+---------------------+
+4 rows in set (0.00 sec)
+
+proc_Grade is a procedure that:
+Takes a student’s roll, name, and marks as input.
+Determines the class category (Distinction, First Class, etc.).
+Inserts this information into the Result table.

@@ -1,0 +1,99 @@
+def is_safe_bt(board, row, col, n):
+    for i in range(row):
+        if board[i][col] == 1:
+            return False
+    for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
+        if board[i][j] == 1:
+            return False
+    for i, j in zip(range(row, -1, -1), range(col, n)):
+        if board[i][j] == 1:
+            return False
+    return True
+
+def solve_bt(board, row, n):
+    if row == n:
+        print_solution(board)
+        return True
+    res = False
+    for col in range(n):
+        if is_safe_bt(board, row, col, n):
+            board[row][col] = 1
+            res = solve_bt(board, row + 1, n) or res
+            board[row][col] = 0
+    return res
+
+def n_queens_backtracking(n):
+    board = [[0] * n for _ in range(n)]
+    if not solve_bt(board, 0, n):
+        print("No solution exists")
+
+def n_queens_branch_bound(board, col, n, rows, diag1, diag2):
+    if col == n:
+        print_solution(board)
+        return
+    for row in range(n):
+        if not rows[row] and not diag1[row + col] and not diag2[row - col + n - 1]:
+            board[row][col] = 1
+            rows[row] = diag1[row + col] = diag2[row - col + n - 1] = True
+
+            n_queens_branch_bound(board, col + 1, n, rows, diag1, diag2)
+
+            board[row][col] = 0
+            rows[row] = diag1[row + col] = diag2[row - col + n - 1] = False
+
+def print_solution(board):
+    for row in board:
+        for x in row:
+            if x == 1:
+                print('Q', end=' ')
+            else:
+                print('.', end=' ')
+        print()
+    print()
+
+def main():
+    n = int(input("Enter value of N: "))
+
+    print("\nbacktracking")
+    n_queens_backtracking(n)
+
+    print("\nBranch & Bound")
+    board = [[0] * n for _ in range(n)]
+    rows = [False] * n
+    diag1 = [False] * (2 * n - 1)
+    diag2 = [False] * (2 * n - 1)
+    col = 0
+    n_queens_branch_bound(board, col, n, rows, diag1, diag2)
+
+if __name__ == "__main__":
+    main()
+
+# Explanation:
+
+# 1. Backtracking Approach (n_queens_backtracking):
+# - is_safe_bt checks if a queen can be placed at (row, col) without being attacked by
+#   another queen in the same column, upper-left diagonal, or upper-right diagonal.
+# - solve_bt tries to place queens row by row, recursively calling itself for next row.
+# - If a placement leads to no solution, it backtracks (removes the queen) and tries next column.
+# - Prints all possible solutions for N-Queens.
+
+# 2. Branch & Bound Approach (n_queens_branch_bound):
+# - Uses additional arrays: rows, diag1, diag2 to track threats instead of checking the board every time.
+# - diag1[row + col] tracks top-left to bottom-right diagonals.
+# - diag2[row - col + n - 1] tracks top-right to bottom-left diagonals.
+# - This reduces the time complexity by avoiding repeated scanning of board for attacks.
+# - Recursively places queens column by column and backtracks when necessary.
+
+# 3. print_solution:
+# - Prints the board with 'Q' for queen and '.' for empty cells.
+
+# 4. main():
+# - Reads N from user.
+# - Runs both backtracking and branch & bound methods for comparison.
+# - Initializes required arrays for branch & bound.
+
+# In short:
+# - Backtracking: checks safety every time.
+# - Branch & Bound: keeps track of threats using extra arrays for optimization.
+
+    

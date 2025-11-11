@@ -1,0 +1,220 @@
+Ps-1
+sudo mysql -u root -p
+CREATE DATABASE database_name;
+USE database_name;
+SHOW DATABASES;
+
+mysql> CREATE TABLE Account (
+    ->   Acc_no INT PRIMARY KEY,
+    ->   branch_name VARCHAR(50) NOT NULL,
+    ->   balance DECIMAL(12,2) CHECK (balance >= 0)
+    -> );
+Query OK, 0 rows affected (1.20 sec)
+
+mysql> CREATE TABLE Branch (
+    ->   branch_name VARCHAR(50) PRIMARY KEY,
+    ->   branch_city VARCHAR(50),
+    ->   assets_amt DECIMAL(12,2) CHECK (assets_amt >= 0)
+    -> );
+Query OK, 0 rows affected (1.18 sec)
+
+mysql> CREATE TABLE Customer (
+    ->   cust_name VARCHAR(50) PRIMARY KEY,
+    ->   cust_street VARCHAR(100),
+    ->   cust_city VARCHAR(50)
+    -> );
+Query OK, 0 rows affected (1.41 sec)
+
+mysql> CREATE TABLE Depositor (
+    ->   cust_name VARCHAR(50),
+    ->   acc_no INT,
+    ->   PRIMARY KEY (cust_name, acc_no),
+    ->   FOREIGN KEY (cust_name) REFERENCES Customer(cust_name) ON DELETE CASCADE,
+    ->   FOREIGN KEY (acc_no) REFERENCES Account(acc_no) ON DELETE CASCADE
+    -> );
+Query OK, 0 rows affected (0.80 sec)
+
+mysql> CREATE TABLE Loan (
+    ->   acc_no INT,
+    ->   loan_no INT PRIMARY KEY,
+    ->   branch_name VARCHAR(50),
+    ->   amount DECIMAL(12,2) CHECK (amount > 0),
+    ->   FOREIGN KEY (branch_name) REFERENCES Branch(branch_name) ON DELETE CASCADE
+    -> );
+Query OK, 0 rows affected (1.39 sec)
+
+mysql> 
+mysql> CREATE TABLE Borrower1(
+    ->   cust_name VARCHAR(50),
+    ->   loan_no INT,
+    ->   PRIMARY KEY (cust_name, loan_no),
+    ->   FOREIGN KEY (cust_name) REFERENCES Customer(cust_name) ON DELETE CASCADE,
+    ->   FOREIGN KEY (loan_no) REFERENCES Loan(loan_no) ON DELETE CASCADE
+    -> );
+Query OK, 0 rows affected (1.46 sec)
+
+mysql> INSERT INTO Branch VALUES
+    -> ('Pimpri', 'Pune', 5000000),
+    -> ('Akurdi', 'Pune', 3000000),
+    -> ('Nigdi', 'Pune', 2500000);
+Query OK, 3 rows affected (0.14 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> INSERT INTO Account VALUES
+    -> (1001, 'Pimpri', 15000),
+    -> (1002, 'Akurdi', 8000),
+    -> (1003, 'Nigdi', 13000),
+    -> (1004, 'Pimpri', 20000);
+Query OK, 4 rows affected (0.13 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> INSERT INTO Customer VALUES
+    -> ('Ravi', 'MG Road', 'Pune'),
+    -> ('Sneha', 'FC Road', 'Pune'),
+    -> ('Amit', 'Shivaji Nagar', 'Pune'),
+    -> ('Neha', 'Akurdi Road', 'Pune');
+Query OK, 4 rows affected (0.16 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> INSERT INTO Depositor VALUES
+    -> ('Ravi', 1001),
+    -> ('Sneha', 1002),
+    -> ('Amit', 1003),
+    -> ('Neha', 1004);
+Query OK, 4 rows affected (0.17 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> INSERT INTO Loan VALUES
+    -> (1001, 201, 'Pimpri', 18000),
+    -> (1002, 202, 'Akurdi', 10000),
+    -> (1003, 203, 'Nigdi', 22000);
+Query OK, 3 rows affected (0.45 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> INSERT INTO Borrower1 VALUES
+    -> ('Ravi', 201),
+    -> ('Sneha', 202),
+    -> ('Amit', 203);
+Query OK, 3 rows affected (0.11 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> SELECT DISTINCT branch_name FROM Loan;
++-------------+
+| branch_name |
++-------------+
+| Akurdi      |
+| Nigdi       |
+| Pimpri      |
++-------------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT loan_no 
+    -> FROM Loan
+    -> WHERE branch_name = 'Pimpri' AND amount > 12000;
++---------+
+| loan_no |
++---------+
+|     201 |
++---------+
+1 row in set (0.00 sec)
+
+mysql> SELECT b.cust_name, l.loan_no, l.amount
+    -> FROM Borrower1 b
+    -> JOIN Loan l ON b.loan_no = l.loan_no;
++-----------+---------+----------+
+| cust_name | loan_no | amount   |
++-----------+---------+----------+
+| Ravi      |     201 | 18000.00 |
+| Sneha     |     202 | 10000.00 |
+| Amit      |     203 | 22000.00 |
++-----------+---------+----------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT b.cust_name
+    -> FROM Borrower1 b
+    -> JOIN Loan l ON b.loan_no = l.loan_no
+    -> WHERE l.branch_name = 'Akurdi'
+    -> ORDER BY b.cust_name ASC;
++-----------+
+| cust_name |
++-----------+
+| Sneha     |
++-----------+
+1 row in set (0.00 sec)
+
+mysql> SELECT DISTINCT cust_name FROM Depositor
+    -> UNION
+    -> SELECT DISTINCT cust_name FROM Borrower1;
++-----------+
+| cust_name |
++-----------+
+| Amit      |
+| Neha      |
+| Ravi      |
+| Sneha     |
++-----------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT DISTINCT d.cust_name
+    -> FROM Depositor d
+    -> INNER JOIN Borrower1 b ON d.cust_name = b.cust_name;
++-----------+
+| cust_name |
++-----------+
+| Ravi      |
+| Sneha     |
+| Amit      |
++-----------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT AVG(balance) AS Avg_Balance_Pimpri
+    -> FROM Account
+    -> WHERE branch_name = 'Pimpri';
++--------------------+
+| Avg_Balance_Pimpri |
++--------------------+
+|       17500.000000 |
++--------------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT branch_name, AVG(balance) AS Avg_Balance
+    -> FROM Account
+    -> GROUP BY branch_name;
++-------------+--------------+
+| branch_name | Avg_Balance  |
++-------------+--------------+
+| Pimpri      | 17500.000000 |
+| Akurdi      |  8000.000000 |
+| Nigdi       | 13000.000000 |
++-------------+--------------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT branch_name, AVG(balance) AS Avg_Balance
+    -> FROM Account
+    -> GROUP BY branch_name
+    -> HAVING AVG(balance) > 12000;
++-------------+--------------+
+| branch_name | Avg_Balance  |
++-------------+--------------+
+| Pimpri      | 17500.000000 |
+| Nigdi       | 13000.000000 |
++-------------+--------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT SUM(amount) AS Total_Loan_Amount
+    -> FROM Loan;
++-------------------+
+| Total_Loan_Amount |
++-------------------+
+|          50000.00 |
++-------------------+
+1 row in set (0.00 sec)
+
+mysql> 
+
+

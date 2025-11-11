@@ -1,0 +1,48 @@
+2) PRIMS 
+import sys
+
+def prim(graph):
+    V = len(graph)
+    selected = [False] * V
+    selected[0] = True
+    edges = []
+
+    for _ in range(V - 1):
+        minimum = sys.maxsize
+        x = y = 0
+        for i in range(V):
+            if selected[i]:
+                for j in range(V):
+                    if not selected[j] and graph[i][j]:
+                        if minimum > graph[i][j]:
+                            minimum = graph[i][j]
+                            x, y = i, j
+        edges.append((x, y, graph[x][y]))
+        selected[y] = True
+
+    print("Edges in MST using Prim's:")
+    for u, v, w in edges:
+        print(f"{u} -- {v} == {w}")
+
+# Example adjacency matrix
+graph = [
+    [0, 2, 0, 6, 0],
+    [2, 0, 3, 8, 5],
+    [0, 3, 0, 0, 7],
+    [6, 8, 0, 0, 9],
+    [0, 5, 7, 9, 0]
+]
+
+prim(graph)
+
+Explanation 
+The algorithm starts with one vertex (here index 0) and keeps adding the smallest edge that connects a visited vertex to an unvisited vertex.
+It marks newly added vertices as visited and repeats until all vertices are included in the MST.
+The result is a list of edges forming the MST with minimum total weight.
+
+Algorithm (short):
+
+Initialize a vertex as visited and MST as empty.
+Find the smallest edge connecting a visited vertex to an unvisited vertex.
+Add that edge to MST and mark the new vertex as visited.
+Repeat step 2–3 until all vertices are included.

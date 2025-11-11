@@ -1,0 +1,84 @@
+4)DIJKSTRAS
+import sys
+
+def dijkstra(graph, start):
+    V = len(graph)
+    visited = [False] * V
+    distance = [sys.maxsize] * V
+    distance[start] = 0
+
+    for _ in range(V):
+        # Pick vertex with minimum distance
+        min_dist = sys.maxsize
+        for v in range(V):
+            if not visited[v] and distance[v] < min_dist:
+                min_dist = distance[v]
+                u = v
+
+        visited[u] = True
+
+        # Update distances of neighbors
+        for v in range(V):
+            if graph[u][v] > 0 and not visited[v]:
+                if distance[v] > distance[u] + graph[u][v]:
+                    distance[v] = distance[u] + graph[u][v]
+
+    # Print final shortest distances
+    print(f"Shortest distances from vertex {start}:")
+    for i in range(V):
+        print(f"{i} : {distance[i]}")
+
+# Example adjacency matrix
+graph = [
+    [0, 4, 0, 0, 0, 0, 0, 8, 0],
+    [4, 0, 8, 0, 0, 0, 0, 11, 0],
+    [0, 8, 0, 7, 0, 4, 0, 0, 2],
+    [0, 0, 7, 0, 9, 14, 0, 0, 0],
+    [0, 0, 0, 9, 0, 10, 0, 0, 0],
+    [0, 0, 4, 14, 10, 0, 2, 0, 0],
+    [0, 0, 0, 0, 0, 2, 0, 1, 6],
+    [8, 11, 0, 0, 0, 0, 1, 0, 7],
+    [0, 0, 2, 0, 0, 0, 6, 7, 0]
+]
+
+dijkstra(graph, 0)
+
+# Dijkstra's Algorithm - Short Explanation
+# 1. Initialize distance[] with ∞, set distance[start] = 0
+# 2. Mark all vertices as unvisited
+# 3. Repeat V times:
+#       a) Pick unvisited vertex u with minimum distance
+#       b) Mark u as visited
+#       c) Update distance of all unvisited neighbors of u if shorter path found
+# 4. Print distance[] as shortest distances from start
+
+# Dijkstra's Algorithm - Detailed Explanation
+
+# 1. Initialization:
+# - Determine the number of vertices V in the graph.
+# - Create a distance array 'distance[]' and initialize all values to infinity (or a very large number), 
+#   except the start vertex which is set to 0.
+# - Create a visited array 'visited[]' of size V to track which vertices have been processed.
+
+# 2. Main Loop (Repeat V times):
+# - Step 1: Select the unvisited vertex 'u' with the smallest distance value from 'distance[]'.
+# - Step 2: Mark vertex 'u' as visited to avoid reprocessing it.
+# - Step 3: For every neighbor 'v' of 'u':
+#     - If there is an edge between 'u' and 'v' and 'v' is not visited:
+#         - Calculate the potential new distance to 'v' as distance[u] + weight(u, v).
+#         - If this new distance is smaller than distance[v], update distance[v] with the new value.
+
+# 3. Termination:
+# - After processing all vertices, 'distance[]' contains the shortest distance from the start vertex 
+#   to every other vertex in the graph.
+
+# 4. Output:
+# - The shortest path distances from the start vertex to each vertex can be printed or returned.
+# - This helps in finding optimal paths in weighted graphs with non-negative edge weights.
+
+# Key Points:
+# - The algorithm ensures that once a vertex is visited, its shortest distance is finalized.
+# - It works efficiently for graphs with non-negative edge weights.
+# - The time complexity depends on the method used to select the minimum distance vertex:
+#     - Using a simple array: O(V^2)
+#     - Using a priority queue (min-heap): O(E log V)

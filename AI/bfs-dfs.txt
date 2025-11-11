@@ -1,0 +1,55 @@
+
+1  from collections import deque
+2
+3  # Undirected graph (Adjacency List)
+4  graph = {
+5      'A': ['B', 'C'],
+6      'B': ['A', 'D', 'E'],
+7      'C': ['A', 'F'],
+8      'D': ['B'],
+9      'E': ['B', 'F'],
+10     'F': ['C', 'E']
+11 }
+12
+13 # Depth First Search (Recursive)
+14 def dfs(node, visited):
+15     print(node, end=' ')
+16     visited.append(node)
+17     for neighbor in graph[node]:
+18         if neighbor not in visited:
+19             dfs(neighbor, visited)
+20
+21 # Breadth First Search (Using Queue)
+22 def bfs(start):
+23     visited = [start]
+24     queue = deque([start])
+25     while queue:
+26         node = queue.popleft()
+27         print(node, end=' ')
+28         for neighbor in graph[node]:
+29             if neighbor not in visited:
+30                 visited.append(neighbor)
+31                 queue.append(neighbor)
+32
+33 print("DFS Traversal:")
+34 dfs('A', [])
+35
+36 print("\nBFS Traversal:")
+37 bfs('A')
+
+DFS Algorithm:
+1. Start at a node, mark as visited.
+2. Print/process the node.
+3. Recursively visit all unvisited neighbors.
+4. Repeat until all reachable nodes are visited.
+
+BFS Algorithm:
+1. Start at a node, mark as visited, enqueue it.
+2. While queue is not empty:
+   a. Dequeue node, print/process it.
+   b. Enqueue all unvisited neighbors and mark visited.
+3. Repeat until queue is empty.
+
+
+
+

@@ -1,0 +1,62 @@
+def alpha_beta(depth, nodeIndex, isMax, values, alpha, beta, maxDepth):
+    # Base condition: if we reach the leaf node
+    if depth == maxDepth:
+        return values[nodeIndex]
+
+    if isMax:  # Maximizer’s move
+        best = float('-inf')
+
+        for i in range(2):  # Two children per node
+            val = alpha_beta(depth + 1, nodeIndex * 2 + i, False, values, alpha, beta, maxDepth)
+            best = max(best, val)
+            alpha = max(alpha, best)
+
+            # Alpha-Beta pruning condition
+            if beta <= alpha:
+                break
+        return best
+
+    else:  # Minimizer’s move
+        best = float('inf')
+
+        for i in range(2):
+            val = alpha_beta(depth + 1, nodeIndex * 2 + i, True, values, alpha, beta, maxDepth)
+            best = min(best, val)
+            beta = min(beta, best)
+
+            # Alpha-Beta pruning condition
+            if beta <= alpha:
+                break
+        return best
+
+
+# Example game tree (depth = 3 → 8 leaf nodes)
+values = [3, 5, 6, 9, 1, 2, 0, -1]
+maxDepth = 3
+
+# Initial call: depth=0, nodeIndex=0, isMax=True, alpha=-∞, beta=+∞
+print("The optimal value is:", alpha_beta(0, 0, True, values, float('-inf'), float('inf'), maxDepth))
+
+# Explanation:
+# 1. Alpha-Beta pruning is an optimization of the minimax algorithm used in game trees.
+# 2. 'isMax' determines whether the current move is by the maximizer or minimizer.
+# 3. 'alpha' stores the best value that maximizer can guarantee at current level or above.
+# 4. 'beta' stores the best value that minimizer can guarantee at current level or above.
+# 5. If beta <= alpha, the remaining children are not explored (pruning) to reduce computations.
+
+# Algorithm:
+# 1. Start at root node with depth=0, alpha=-∞, beta=+∞, and isMax=True.
+# 2. If leaf node is reached, return its value.
+# 3. If maximizer:
+#    a. Initialize best=-∞
+#    b. For each child, recursively call alpha_beta
+#    c. Update best and alpha
+#    d. If beta <= alpha, break (prune)
+#    e. Return best
+# 4. If minimizer:
+#    a. Initialize best=+∞
+#    b. For each child, recursively call alpha_beta
+#    c. Update best and beta
+#    d. If beta <= alpha, break (prune)
+#    e. Return best
+# 5. The returned value from root is the optimal value for the maximizer.

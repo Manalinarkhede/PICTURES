@@ -1,0 +1,64 @@
+# Import heapq to use a priority queue (min-heap)
+import heapq
+
+# A* search algorithm function
+def a_star(graph, heuristics, start, goal):
+    # Priority queue: stores tuples (f, node, g)
+    pq = []
+    # Push the start node with f = g + h = 0 + h(start)
+    heapq.heappush(pq, (heuristics[start], start, 0))
+    
+    # Set to keep track of visited nodes
+    visited = set()
+    
+    # Loop until priority queue is empty
+    while pq:
+        # Pop node with smallest f value
+        f, current, g = heapq.heappop(pq)
+        
+        # Skip if already visited
+        if current in visited:
+            continue
+        
+        # Mark node as visited
+        visited.add(current)
+        print(f"Visiting: {current}, f={f}, g={g}")
+        
+        # If goal is reached, print total cost and stop
+        if current == goal:
+            print(f"Goal '{goal}' reached with total cost {g}")
+            return
+        
+        # Explore neighbors of current node
+        for neighbor, cost in graph[current]:
+            if neighbor not in visited:
+                g_new = g + cost          # new cost to neighbor
+                f_new = g_new + heuristics[neighbor]  # f = g + h
+                heapq.heappush(pq, (f_new, neighbor, g_new))
+
+# Example graph: adjacency list with edge costs
+graph = {
+    'A': [('B', 1), ('C', 4)],
+    'B': [('C', 2), ('D', 3)],
+    'C': [('D', 5)],
+    'D': []
+}
+
+# Heuristic values: estimated cost from node to goal
+heuristics = {'A': 7, 'B': 6, 'C': 2, 'D': 0}
+
+# Run A* search from 'A' to 'D'
+a_star(graph, heuristics, 'A', 'D')
+
+# A* Algorithm (Short Algo)
+# 1. Initialize priority queue with start node (f = g + h)
+# 2. Create a set to track visited nodes
+# 3. While queue is not empty:
+#      a. Pop node with smallest f
+#      b. If node is goal, stop
+#      c. Mark node as visited
+#      d. For each neighbor not visited:
+#           i. Calculate g_new = g + cost
+#          ii. Calculate f_new = g_new + h(neighbor)
+#         iii. Push neighbor with f_new, g_new into queue
+

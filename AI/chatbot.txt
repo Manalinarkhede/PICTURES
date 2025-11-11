@@ -1,0 +1,42 @@
+import random
+
+print("Hi, I am your virtual assistant!")
+name = input("Enter your name: ")
+print(f"Welcome, {name}! How can I help you today?")
+
+responses = {
+    "orders": [
+        "Could you share your order ID?",
+        "Sure, please provide the order name.",
+        "Happy to help! Tell me your order ID."
+    ],
+    "return": [
+        "Returns are easy! Could you share your order ID?",
+        "No worries, we’ll process your return.",
+        "Got it! Let’s start your return process."
+    ],
+    "payment": [
+        "What is your mode of payment?",
+        "We accept online payments, UPI, and cards."
+    ],
+    "default": [
+        "Can you rephrase it?",
+        "Could you say that again?",
+        "I didn’t catch that, can you repeat?"
+    ]
+}
+
+while True:
+    user_input = input(f"{name}: ").lower()
+    
+    if "exit" in user_input or "bye" in user_input:
+        print("Bot: It was great helping you, goodbye!")
+        break
+    elif "order" in user_input:
+        print("Bot:", random.choice(responses["orders"]))
+    elif "return" in user_input:
+        print("Bot:", random.choice(responses["return"]))
+    elif "payment" in user_input:
+        print("Bot:", random.choice(responses["payment"]))
+    else:
+        print("Bot:", random.choice(responses["default"]))

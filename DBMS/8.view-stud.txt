@@ -1,0 +1,150 @@
+Ps-8
+sudo mysql -u root -p
+CREATE DATABASE database_name;
+USE database_name;
+SHOW DATABASES;
+
+mysql> CREATE TABLE Student (
+    ->     Student_ID INT AUTO_INCREMENT PRIMARY KEY,
+    ->     Student_Name VARCHAR(50) NOT NULL,
+    ->     Class VARCHAR(10),
+    ->     Address VARCHAR(100)
+    -> );
+Query OK, 0 rows affected (0.84 sec)
+
+mysql> CREATE TABLE Subject (
+    ->     Subject_ID INT AUTO_INCREMENT PRIMARY KEY,
+    ->     Subject_Name VARCHAR(50)
+    -> );
+Query OK, 0 rows affected (1.13 sec)
+
+mysql> CREATE TABLE Enrollment (
+    ->     Enrollment_ID INT AUTO_INCREMENT PRIMARY KEY,
+    ->     Student_ID INT,
+    ->     Subject_ID INT,
+    ->     Grade VARCHAR(5),
+    ->     FOREIGN KEY (Student_ID) REFERENCES Student(Student_ID),
+    ->     FOREIGN KEY (Subject_ID) REFERENCES Subject(Subject_ID)
+    -> );
+Query OK, 0 rows affected (1.38 sec)
+
+mysql> CREATE TABLE Attendance (
+    ->     Attendance_ID INT AUTO_INCREMENT PRIMARY KEY,
+    ->     Student_ID INT,
+    ->     Total_Classes INT,
+    ->     Classes_Attended INT,
+    ->     FOREIGN KEY (Student_ID) REFERENCES Student(Student_ID)
+    -> );
+Query OK, 0 rows affected (0.93 sec)
+
+mysql> INSERT INTO Student (Student_Name, Class, Address) VALUES
+    -> ('Ravi Sharma', '10A', 'Pune'),
+    -> ('Sneha Patil', '10A', 'Mumbai'),
+    -> ('Amit Desai', '10B', 'Nashik');
+Query OK, 3 rows affected (0.10 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Subject (Subject_Name) VALUES
+    -> ('Mathematics'),
+    -> ('Science'),
+    -> ('English');
+Query OK, 3 rows affected (0.12 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Enrollment (Student_ID, Subject_ID, Grade) VALUES
+    -> (1, 1, 'A'),
+    -> (1, 2, 'B'),
+    -> (2, 1, 'A'),
+    -> (3, 3, 'C');
+Query OK, 4 rows affected (0.21 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Attendance (Student_ID, Total_Classes, Classes_Attended) VALUES
+    -> (1, 50, 45),
+    -> (2, 50, 48),
+    -> (3, 50, 30);
+Query OK, 3 rows affected (0.12 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> CREATE VIEW Student_Performance_View AS
+    -> SELECT 
+    ->     s.Student_ID,
+    ->     s.Student_Name,
+    ->     s.Class,
+    ->     sub.Subject_Name,
+    ->     e.Grade,
+    ->     a.Classes_Attended,
+    ->     a.Total_Classes,
+    ->     ROUND((a.Classes_Attended / a.Total_Classes) * 100, 2) AS Attendance_Percentage
+    -> FROM Student s
+    -> JOIN Enrollment e ON s.Student_ID = e.Student_ID
+    -> JOIN Subject sub ON e.Subject_ID = sub.Subject_ID
+    -> JOIN Attendance a ON s.Student_ID = a.Student_ID;
+Query OK, 0 rows affected (0.14 sec)
+
+mysql> SELECT * FROM Student_Performance_View;
++------------+--------------+-------+--------------+-------+------------------+---------------+-----------------------+
+| Student_ID | Student_Name | Class | Subject_Name | Grade | Classes_Attended | Total_Classes | Attendance_Percentage |
++------------+--------------+-------+--------------+-------+------------------+---------------+-----------------------+
+|          1 | Ravi Sharma  | 10A   | Mathematics  | A     |               45 |            50 |                 90.00 |
+|          1 | Ravi Sharma  | 10A   | Science      | B     |               45 |            50 |                 90.00 |
+|          2 | Sneha Patil  | 10A   | Mathematics  | A     |               48 |            50 |                 96.00 |
+|          3 | Amit Desai   | 10B   | English      | C     |               30 |            50 |                 60.00 |
++------------+--------------+-------+--------------+-------+------------------+---------------+-----------------------+
+4 rows in set (0.00 sec)
+
+mysql> CREATE TABLE Student_Seq (
+    ->     Next_ID INT
+    -> );
+Query OK, 0 rows affected (0.62 sec)
+
+mysql> 
+mysql> INSERT INTO Student_Seq VALUES (1001);
+Query OK, 1 row affected (0.17 sec)
+
+mysql> 
+mysql> -- Function to get next ID
+mysql> DELIMITER //
+mysql> CREATE PROCEDURE next_student_id(OUT new_id INT)
+    -> BEGIN
+    ->     UPDATE Student_Seq SET Next_ID = Next_ID + 1;
+    ->     SELECT Next_ID INTO new_id FROM Student_Seq;
+    -> END //
+Query OK, 0 rows affected (0.25 sec)
+
+mysql> DELIMITER ;
+mysql> 
+mysql> -- Example usage:
+mysql> CALL next_student_id(@id);
+Query OK, 1 row affected (0.21 sec)
+
+mysql> SELECT @id AS Generated_Student_ID;
++----------------------+
+| Generated_Student_ID |
++----------------------+
+|                 1002 |
++----------------------+
+1 row in set (0.00 sec)
+
+mysql> CREATE INDEX idx_student_name ON Student(Student_Name);
+Query OK, 0 rows affected (0.63 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM Student WHERE Student_Name = 'Ravi Sharma';
++------------+--------------+-------+---------+
+| Student_ID | Student_Name | Class | Address |
++------------+--------------+-------+---------+
+|          1 | Ravi Sharma  | 10A   | Pune    |
++------------+--------------+-------+---------+
+1 row in set (0.00 sec)
+
+A procedure next_student_id() increments and fetches the next unique student ID automatically.
+An index idx_student_name is created on the Student_Name column.
+This improves the speed of searching for students by name.
+
+Sequence creation means **generating unique IDs automatically** for each new student.
+Since **MySQL doesn’t support sequences directly**, a small table called **`Student_Seq`** is used to store the **last used ID**.
+The procedure **`next_student_id()`** simply:
+1. Increases that ID by 1.
+2. Updates it in the table.
+3. Returns the new ID as the **next student’s unique number**.

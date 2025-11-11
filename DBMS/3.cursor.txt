@@ -1,0 +1,97 @@
+Ps-3
+sudo mysql -u root -p
+CREATE DATABASE database_name;
+USE database_name;
+SHOW DATABASES;
+
+mysql> use stud_db;
+Database changed
+mysql> CREATE TABLE O_Roll_Call (
+    ->     roll_no INT PRIMARY KEY,
+    ->     name VARCHAR(100)
+    -> );
+Query OK, 0 rows affected (0.71 sec)
+
+mysql> CREATE TABLE N_Roll_Call (
+    ->     roll_no INT,
+    ->     name VARCHAR(100)
+    -> );
+Query OK, 0 rows affected (1.19 sec)
+
+mysql> INSERT INTO O_Roll_Call VALUES (1, 'John');
+Query OK, 1 row affected (0.10 sec)
+
+mysql> INSERT INTO O_Roll_Call VALUES (2, 'Amit');
+Query OK, 1 row affected (0.14 sec)
+
+mysql> INSERT INTO N_Roll_Call VALUES (2, 'Amit');
+Query OK, 1 row affected (0.11 sec)
+
+mysql> INSERT INTO N_Roll_Call VALUES (3, 'Ravi');
+Query OK, 1 row affected (0.17 sec)
+
+mysql> INSERT INTO N_Roll_Call VALUES (4, 'Sneha');
+Query OK, 1 row affected (0.12 sec)
+
+mysql> DELIMITER //
+mysql> 
+mysql> CREATE PROCEDURE merge_roll_calls()
+    -> BEGIN
+    ->     DECLARE done INT DEFAULT 0;
+    ->     DECLARE v_roll INT;
+    ->     DECLARE v_name VARCHAR(100);
+    ->     DECLARE v_exists INT;
+    -> 
+    ->     -- Declare cursor
+    ->     DECLARE cur CURSOR FOR
+    ->         SELECT roll_no, name FROM N_Roll_Call;
+    -> 
+    ->     -- Declare handler for end of data
+    ->     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+    -> 
+    ->     OPEN cur;
+    -> 
+    ->     read_loop: LOOP
+    ->         FETCH cur INTO v_roll, v_name;
+    ->         IF done = 1 THEN
+    ->             LEAVE read_loop;
+    ->         END IF;
+    -> 
+    ->         -- Check if record already exists
+    ->         SELECT COUNT(*) INTO v_exists
+    ->         FROM O_Roll_Call
+    ->         WHERE roll_no = v_roll;
+    -> 
+    ->         IF v_exists = 0 THEN
+    ->             INSERT INTO O_Roll_Call (roll_no, name)
+    ->             VALUES (v_roll, v_name);
+    ->         END IF;
+    ->     END LOOP;
+    -> 
+    ->     CLOSE cur;
+    -> END //
+Query OK, 0 rows affected (0.20 sec)
+
+mysql> 
+mysql> DELIMITER ;
+mysql> CALL merge_roll_calls();
+Query OK, 0 rows affected (0.23 sec)
+
+mysql> SELECT * FROM O_Roll_Call;
++---------+-------+
+| roll_no | name  |
++---------+-------+
+|       1 | John  |
+|       2 | Amit  |
+|       3 | Ravi  |
+|       4 | Sneha |
++---------+-------+
+4 rows in set (0.00 sec)
+
+You created two tables: O_Roll_Call (original) and N_Roll_Call (new).
+Inserted sample data into both tables.
+Created a stored procedure merge_roll_calls() using a cursor to iterate over N_Roll_Call.
+For each row in N_Roll_Call, it checks if the roll_no already exists in O_Roll_Call.
+If it doesn’t exist, it inserts the row into O_Roll_Call.
+
+After calling the procedure, O_Roll_Call contains all unique records from both tables.

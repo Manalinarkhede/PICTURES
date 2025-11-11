@@ -1,0 +1,68 @@
+5) JOB SCHEDULING 
+Each job has:
+an ID a deadline a profit
+We must schedule jobs so that profit is maximum, and no two jobs overlap (each job takes 1 unit time).
+
+# Job Scheduling Problem
+
+def job_scheduling(jobs):
+    # Sort jobs by profit (highest first)
+    jobs.sort(key=lambda x: x[2], reverse=True)
+
+    n = len(jobs)
+    max_deadline = max(job[1] for job in jobs)
+    slots = [-1] * (max_deadline + 1)
+
+    total_profit = 0
+    job_sequence = []
+
+    for job in jobs:
+        job_id, deadline, profit = job
+        # Find a free slot for this job (from its deadline backward)
+        for t in range(deadline, 0, -1):
+            if slots[t] == -1:
+                slots[t] = job_id
+                total_profit += profit
+                job_sequence.append(job_id)
+                break
+
+    print("Selected jobs:", job_sequence)
+    print("Total Profit:", total_profit)
+
+
+# Example Input: (job_id, deadline, profit)
+jobs = [
+    ('J1', 2, 100),
+    ('J2', 1, 19),
+    ('J3', 2, 27),
+    ('J4', 1, 25),
+    ('J5', 3, 15)
+]
+
+job_scheduling(jobs)
+
+# Job Scheduling Problem - Algorithm
+
+# 1. Input:
+# - Receive a list of jobs where each job has an ID, a deadline, and a profit.
+
+# 2. Sort Jobs:
+# - Sort all jobs in descending order based on profit to prioritize high-profit jobs.
+
+# 3. Initialize:
+# - Determine the maximum deadline among all jobs.
+# - Create an array 'slots[]' to track free time slots for scheduling jobs, initially all empty.
+
+# 4. Schedule Jobs:
+# - For each job in the sorted list:
+#     - Try to assign the job to the latest available free slot on or before its deadline.
+#     - If a free slot is found, assign the job, add its profit to total profit, and record its ID.
+
+# 5. Output:
+# - Print the sequence of selected jobs.
+# - Print the total profit achieved by the scheduled jobs.
+
+# Key Points:
+# - Each job takes 1 unit of time.
+# - No two jobs can occupy the same time slot.
+# - The greedy approach ensures maximum profit by choosing high-profit jobs first.
