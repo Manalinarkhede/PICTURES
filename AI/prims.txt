@@ -35,14 +35,15 @@ graph = [
 
 prim(graph)
 
-Explanation 
-The algorithm starts with one vertex (here index 0) and keeps adding the smallest edge that connects a visited vertex to an unvisited vertex.
-It marks newly added vertices as visited and repeats until all vertices are included in the MST.
-The result is a list of edges forming the MST with minimum total weight.
+#Explanation 
+#The algorithm starts with one vertex (here index 0) and keeps adding the smallest edge that connects a visited vertex to an unvisited vertex.
+#It marks newly added vertices as visited and repeats until all vertices are included in the MST.
+#The result is a list of edges forming the MST with minimum total weight.
 
-Algorithm (short):
+#Algorithm (short):
 
-Initialize a vertex as visited and MST as empty.
-Find the smallest edge connecting a visited vertex to an unvisited vertex.
-Add that edge to MST and mark the new vertex as visited.
-Repeat step 2–3 until all vertices are included.
+#Initialize a vertex as visited and MST as empty.
+#Find the smallest edge connecting a visited vertex to an unvisited vertex.
+#Add that edge to MST and mark the new vertex as visited.
+
+#Repeat step 2–3 until all vertices are included.
