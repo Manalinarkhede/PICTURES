@@ -1,0 +1,13 @@
+for continuous conversataion between client and server
+while (true) {
+    String msg = in.readLine();
+    if (msg.equalsIgnoreCase("exit")) break;
+    out.println("Echo: " + msg);
+}
+
+while (true) {
+    String msg = userInput.readLine();
+    out.println(msg);
+    if (msg.equalsIgnoreCase("exit")) break;
+    System.out.println("Server says: " + in.readLine());
+}

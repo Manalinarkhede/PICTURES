@@ -1,0 +1,41 @@
+def prefix_to_subnet_mask(prefix_length):
+    mask = (0xFFFFFFFF >> (32 - prefix_length)) << (32 - prefix_length)
+    return [
+        (mask >> 24) & 0xFF,
+        (mask >> 16) & 0xFF,
+        (mask >> 8) & 0xFF,
+        mask & 0xFF
+    ]
+
+def ip_class(first_octet):
+    first_octet = int(first_octet)
+    if 1 <= first_octet <= 126:
+        return "Class A"
+    elif 128 <= first_octet <= 191:
+        return "Class B"
+    elif 192 <= first_octet <= 223:
+        return "Class C"
+    elif 224 <= first_octet <= 239:
+        return "Class D (Multicast)"
+    elif 240 <= first_octet <= 255:
+        return "Class E (Reserved)"
+    else:
+        return "Unknown"
+
+def main():
+    ip = input("Enter IP address (e.g., 192.168.1.0): ")
+    prefix = int(input("Enter prefix length (e.g., 24 for /24): "))
+    
+    mask = prefix_to_subnet_mask(prefix)
+    first_octet = ip.split('.')[0]
+    
+    total_ips = 2 ** (32 - prefix)
+    usable_hosts = total_ips - 2 if prefix < 31 else total_ips  # special cases for /31 and /32
+    
+    print(f"IP Class: {ip_class(first_octet)}")
+    print(f"Subnet Mask: {'.'.join(map(str, mask))}")
+    print(f"Total IP addresses per subnet: {total_ips}")
+    print(f"Usable hosts per subnet: {usable_hosts}")
+
+if __name__ == "__main__":
+    main()

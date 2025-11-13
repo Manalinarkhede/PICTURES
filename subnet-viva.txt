@@ -1,0 +1,28 @@
+Subnetting means dividing a large network (like 192.168.1.0) into smaller networks (called subnets).
+It helps in efficient IP address usage and better network management.
+Each subnet can have its own range of IPs for different departments or areas.
+
+A subnet mask tells how many bits of the IP address represent the network part and how many bits represent the host part.
+Example:
+For /24, subnet mask = 255.255.255.0
+First 24 bits → network
+Last 8 bits → host
+255.255.255.0 in binary → 11111111.11111111.11111111.00000000
+
+subnet_mask = (1 << 32) - (1 << (32 - prefix_length))
+(1 << 32) means 2³² (total bits in IPv4 address = 32 bits).
+(1 << (32 - prefix_length)) means remaining host bits.
+Subtracting gives subnet mask in binary form.
+Example:
+For /24, (1 << 32) - (1 << 8) = 4294967296 - 256 = 4294967040
+which equals 255.255.255.0.
+
+This checks the first part of IP to find its class:
+
+1–126 → Class A default mask /8
+128–191 → Class B /16
+192–223 → Class C /24
+224–239 → Class D (multicast)
+240–255 → Class E (reserved)
+
+host_bits = 32 − prefix; total_ips = 2^host_bits; usable_hosts = total_ips − 2 (unless /31 or /32).
